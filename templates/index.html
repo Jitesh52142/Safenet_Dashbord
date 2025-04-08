@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Safety Risk Assessment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    :root {
+      --bg: #fdf6f0;
+      --panel: #fff7f0;
+      --text: #3c2f2f;
+      --accent: #a47148;
+      --accent-dark: #8b5e3c;
+      --input-bg: #fffdfc;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: var(--panel);
+      padding: 50px 40px;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      width: 90%;
+      max-width: 800px;
+      animation: slideFade 0.6s ease-out;
+    }
+
+    @keyframes slideFade {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 40px;
+      color: var(--accent-dark);
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    input {
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: none;
+      background-color: var(--input-bg);
+      box-shadow: inset 0 0 0 1px #ccc;
+      font-size: 15px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--accent);
+    }
+
+    button[type="submit"] {
+      grid-column: span 2;
+      background-color: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: var(--accent-dark);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      button[type="submit"] {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Safety Risk Assessment</h1>
+    <form action="/predict" method="post">
+      <div class="form-group">
+        <label>Tower ID:</label>
+        <input type="number" name="tower_id" required>
+      </div>
+      <div class="form-group">
+        <label>Latitude:</label>
+        <input type="number" step="any" name="latitude" required>
+      </div>
+      <div class="form-group">
+        <label>Longitude:</label>
+        <input type="number" step="any" name="longitude" required>
+      </div>
+      <div class="form-group">
+        <label>Signal Strength (dBm):</label>
+        <input type="number" name="signal" required>
+      </div>
+      <div class="form-group">
+        <label>Male Count:</label>
+        <input type="number" name="male_count" required>
+      </div>
+      <div class="form-group">
+        <label>Female Count:</label>
+        <input type="number" name="female_count" required>
+      </div>
+      <div class="form-group">
+        <label>Crowd Density:</label>
+        <input type="number" step="any" name="density" required>
+      </div>
+      <div class="form-group">
+        <label>Total Population:</label>
+        <input type="number" name="population" required>
+      </div>
+      <div class="form-group">
+        <label>Time (HH:MM:SS):</label>
+        <input type="text" name="time" placeholder="00:00:00" required>
+      </div>
+      <button type="submit">Assess Risk</button>
+    </form>
+  </div>
+</body>
+</html>

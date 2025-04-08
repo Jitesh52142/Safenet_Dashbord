@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Risk Assessment Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background:rgb(214, 218, 221);
+      color:rgb(214, 218, 221);
+      width: 100%;
+    }
+
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      width: 100%;
+      max-width: 100vw;
+      margin: 0 auto;
+      padding: 0;
+      background-color:rgb(244, 245, 247);
+    }
+
+        /* Map Section (50% Height) */
+    .map-section {
+      margin: 0; /* Reset margin */
+      width: 100vw; /* Full viewport width */
+      height: 50vh; /* 50% of the viewport height */
+      background-color: rgb(3, 5, 9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      color: rgb(19, 20, 22);
+      border-bottom: 4px solid #415a77;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      overflow: hidden;
+    }
+
+    /* Dashboard Row */
+    .dashboard {
+      flex-shrink: 0;
+      width: 175%;
+      max-width: 100vw;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      padding: 20px 40px;
+      background: rgba(16, 29, 48, 0.95);
+      box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.5);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      box-sizing: border-box;
+    }
+
+    .dashboard-item {
+      margin-right: 30px;
+      font-size: 16px;
+      color: #dce3ea;
+      margin-bottom: 16px;
+      min-width: 200px;
+      line-height: 1.6;
+    }
+
+
+    .dashboard-item span {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .risk-badge {
+      padding: 6px 14px;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+    }
+
+    .low { background-color: #2e7d32; }
+    .medium { background-color: #fbc02d; color: #111; }
+    .high { background-color: #c62828; }
+
+    .go-btn {
+      margin-left: auto;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 12px rgba(4, 11, 18, 0.5);
+    }
+
+    .go-btn:hover {
+      background-color: #125ea6;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .dashboard {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 20px;
+      }
+
+      .go-btn {
+        align-self: flex-end;
+        width: 100%;
+        margin-top: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+   
+   <!-- Top Half Map Section -->
+<div class="map-section">
+  {% include "map.html" %}
+</div>
+
+    
+
+    <!-- Dashboard Output Row -->
+    <div class="dashboard">
+      <div class="dashboard-item">
+        Tower ID: <span>{{ result.tower_id }}</span>
+      </div>
+      <div class="dashboard-item">
+        Location: <span>{{ result.location }}</span>
+      </div>
+      <div class="dashboard-item">
+        Time: <span>{{ result.time }}</span>
+      </div>
+      <div class="dashboard-item">
+        Male Count: <span>{{ result.Male_count }}</span>
+      </div>
+      <div class="dashboard-item">
+        Female Count: <span>{{ result.Female_count }}</span>
+      </div>
+      <div class="dashboard-item">
+        Signal Strength: <span>{{ result.signal_strength }} dBm</span>
+      </div>
+      <div class="dashboard-item">
+        Risk Level: 
+        <span class="risk-badge {{ 'high' if result.risk_level == 2 else 'medium' if result.risk_level == 1 else 'low' }}">
+          {{ ['Low', 'Medium', 'High'][result.risk_level] }}
+        </span>
+      </div>
+
+      <!-- Button to Go to Location -->
+      <button class="go-btn" onclick="goToMapLocation()">📍 Go to Location</button>
+    </div>
+
+  </div>
+
+  <script>
+    function goToMapLocation() {
+      const loc = "{{ result.location }}";  // e.g., "18.5204, 73.8567"
+      const [lat, lon] = loc.split(',').map(parseFloat);
+      window.location.href = `/map/${lat}/${lon}`;
+    }
+  </script>
+  
+  
+</body>
+</html>
+
+

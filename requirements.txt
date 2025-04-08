@@ -1,0 +1,7 @@
+pandas 
+numpy 
+sickit-learn
+pickle
+os
+flask
+folium

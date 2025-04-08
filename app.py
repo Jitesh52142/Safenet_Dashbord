@@ -1,0 +1,184 @@
+from flask import Flask, render_template, request
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+import pickle
+import os
+import folium
+
+app = Flask(__name__)
+
+# Path configuration
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, 'data')
+MODEL_DIR = os.path.join(BASE_DIR, 'models')
+
+def preprocess_time(df):
+    """Preprocess time features"""
+    df['Time'] = pd.to_datetime(df['Time'], format='%H:%M:%S', errors='coerce')
+    seconds_in_day = 24 * 60 * 60
+    df['Time_seconds'] = df['Time'].dt.hour * 3600 + df['Time'].dt.minute * 60 + df['Time'].dt.second
+    df['Time_sin'] = np.sin(2 * np.pi * df['Time_seconds'] / seconds_in_day)
+    df['Time_cos'] = np.cos(2 * np.pi * df['Time_seconds'] / seconds_in_day)
+    return df.drop(columns=['Time', 'Time_seconds'], errors='ignore')
+
+def feature_engineering(df):
+    """Create additional features"""
+    # Gender features
+    df['GenderRatio'] = df['FemaleCount'] / (df['MaleCount'] + 1e-5)
+    df['DPG_Male'] = (df['MaleCount'] > df['FemaleCount']).astype(int)
+    df['DPG_Female'] = (df['FemaleCount'] > df['MaleCount']).astype(int)
+    
+    # Time features
+    df['Hour'] = (np.arctan2(df['Time_sin'], df['Time_cos']) * 24 / (2 * np.pi) % 24)
+    df['NightTime'] = df['Hour'].apply(lambda h: 1 if (h >= 18 or h < 6) else 0)
+    
+    # Population features
+    df['RollingAvgPop'] = df['TotalPopulation'].rolling(5, min_periods=1).mean()
+    df['SuddenDrop'] = (df['TotalPopulation'] < 0.5 * df['RollingAvgPop']).astype(int)
+    
+    # Signal features
+    df['NoSignal'] = (df['SignalStrength (dBm)'] < -109).astype(int)
+    df['LowCrowdDensity'] = (df['CrowdDensity (people/m²)'] < 0.01).astype(int)
+    
+    return df
+
+def classify_risk(row):
+    """Rule-based risk classification"""
+    high_risk = 0
+    med_risk = 0
+    
+    # High risk conditions
+    if row['CrowdDensity (people/m²)'] < 0.01: high_risk += 1
+    if row['SignalStrength (dBm)'] < -100: high_risk += 1
+    if row['GenderRatio'] < 0.2: high_risk += 1
+    if row['Isolation'] == 1: high_risk += 1
+    if row['TotalPopulation'] < 10: high_risk += 1
+    if row['SuddenDrop'] == 1: high_risk += 1
+    if row['NoSignal'] == 1: high_risk += 1
+    if row['LowCrowdDensity'] == 1: high_risk += 1
+    
+    # Medium risk conditions
+    if 0.01 <= row['CrowdDensity (people/m²)'] < 0.05: med_risk += 1
+    if -100 <= row['SignalStrength (dBm)'] < -90: med_risk += 1
+    if 0.2 <= row['GenderRatio'] < 0.5: med_risk += 1
+    if 10 <= row['TotalPopulation'] < 50: med_risk += 1
+    if row['NightTime'] == 1: med_risk += 1
+    
+    if high_risk >= 2: return 2
+    if med_risk >= 2 or high_risk == 1: return 1
+    return 0
+
+def inverse_time(sin_val, cos_val):
+    """Convert encoded time back to HH:MM:SS"""
+    angle = np.arctan2(sin_val, cos_val)
+    if angle < 0: angle += 2 * np.pi
+    hours = angle * 24 / (2 * np.pi)
+    h = int(hours)
+    m = int((hours - h) * 60)
+    s = int((hours - h - m/60) * 3600)
+    return f"{h:02d}:{m:02d}:{s:02d}"
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+
+@app.route('/map')
+def map():
+    return render_template("map.html")
+
+
+
+
+@app.route('/map/<float:lat>/<float:lon>')
+def show_map(lat, lon):
+    map_obj = folium.Map(location=[lat, lon], zoom_start=16)
+    folium.Marker([lat, lon], popup='Tower Location').add_to(map_obj)
+
+    map_html = map_obj._repr_html_()
+    return render_template('folium_map.html', map_html=map_html)
+
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    # Get form data
+    form_data = {
+        'Tower ID': int(request.form['tower_id']),
+        'Latitude': float(request.form['latitude']),
+        'Longitude': float(request.form['longitude']),
+        'SignalStrength (dBm)': int(request.form['signal']),
+        'MaleCount': int(request.form['male_count']),
+        'FemaleCount': int(request.form['female_count']),
+        'CrowdDensity (people/m²)': float(request.form['density']),
+        'TotalPopulation': int(request.form['population']),
+        'Time': request.form['time']
+    }
+    
+    # Create DataFrame
+    input_df = pd.DataFrame([form_data])
+    
+    # Preprocess time
+    input_df = preprocess_time(input_df)
+    
+    # Load base dataset and fit scaler
+    base_df = pd.read_csv(os.path.join(DATA_DIR, 'with_time_new.csv'))
+    base_df = preprocess_time(base_df)
+    scaler1 = StandardScaler().fit(base_df)
+    
+    # Predict Isolation
+    with open(os.path.join(MODEL_DIR, 'rf_model.pkl'), 'rb') as f:
+        rf_model = pickle.load(f)
+    input_scaled = scaler1.transform(input_df)
+    input_df['Isolation'] = rf_model.predict(input_scaled)
+    
+    # Feature engineering
+    input_df = feature_engineering(input_df)
+    
+    # Load final dataset and fit second scaler
+    final_df = pd.read_csv(os.path.join(DATA_DIR, 'prefinal.csv'))
+    scaler2 = StandardScaler().fit(final_df)
+    
+    # Predict Risk Level
+    with open(os.path.join(MODEL_DIR, 'log_model.pkl'), 'rb') as f:
+        log_model = pickle.load(f)
+    final_scaled = scaler2.transform(input_df[final_df.columns])
+    ml_risk = log_model.predict(final_scaled)[0]
+    
+    # Rule-based risk
+    rule_risk = classify_risk(input_df.iloc[0])
+    
+    # Hybrid risk calculation
+    final_risk = int(0.4 * ml_risk + 0.6 * rule_risk)
+    final_risk = 2 if final_risk >= 1.5 else 1 if final_risk >= 0.5 else 0
+    
+    # Generate time string
+    time_str = inverse_time(input_df['Time_sin'].iloc[0], input_df['Time_cos'].iloc[0])
+    
+    # Prepare result
+    result = {
+        'tower_id': form_data['Tower ID'],
+        'location': f"{form_data['Latitude']}, {form_data['Longitude']}",
+        'signal_strength':form_data['SignalStrength (dBm)'],
+        'Male_count' :form_data['MaleCount'],
+        'Female_count': form_data['FemaleCount'],
+        'time': time_str,
+        'risk_level': final_risk,
+        'alert': generate_alert(final_risk, form_data)
+    }
+    
+    return render_template('result.html', result=result)
+
+def generate_alert(risk_level, data):
+    """Generate alert message based on risk level"""
+    messages = {
+        2: f"🚨 URGENT: HIGH risk at Tower {data['Tower ID']} ({data['Latitude']}, {data['Longitude']})",
+        1: f"⚠️ WARNING: MEDIUM risk at Tower {data['Tower ID']} ({data['Latitude']}, {data['Longitude']})",
+        0: f"✅ SAFE: LOW risk at Tower {data['Tower ID']} ({data['Latitude']}, {data['Longitude']})"
+    }
+    return messages[risk_level] + f" at {data['Time']}"
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
