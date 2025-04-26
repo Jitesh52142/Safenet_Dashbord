@@ -43,31 +43,56 @@ def feature_engineering(df):
     
     return df
 
+# --- Updated Risk Classification Function ---
 def classify_risk(row):
-    """Rule-based risk classification"""
-    high_risk = 0
-    med_risk = 0
-    
-    # High risk conditions
-    if row['CrowdDensity (people/m²)'] < 0.01: high_risk += 1
-    if row['SignalStrength (dBm)'] < -100: high_risk += 1
-    if row['GenderRatio'] < 0.2: high_risk += 1
-    if row['Isolation'] == 1: high_risk += 1
-    if row['TotalPopulation'] < 10: high_risk += 1
-    if row['SuddenDrop'] == 1: high_risk += 1
-    if row['NoSignal'] == 1: high_risk += 1
-    if row['LowCrowdDensity'] == 1: high_risk += 1
-    
-    # Medium risk conditions
-    if 0.01 <= row['CrowdDensity (people/m²)'] < 0.05: med_risk += 1
-    if -100 <= row['SignalStrength (dBm)'] < -90: med_risk += 1
-    if 0.2 <= row['GenderRatio'] < 0.5: med_risk += 1
-    if 10 <= row['TotalPopulation'] < 50: med_risk += 1
-    if row['NightTime'] == 1: med_risk += 1
-    
-    if high_risk >= 2: return 2
-    if med_risk >= 2 or high_risk == 1: return 1
-    return 0
+    """
+    Classifies the risk level based on multiple feature thresholds.
+    Returns:
+        2 -> High Risk
+        1 -> Median Risk
+        0 -> Low Risk
+    """
+    high_risk_conditions = 0
+    median_risk_conditions = 0
+
+    # --- High Risk Conditions ---
+    if row['CrowdDensity (people/m²)'] < 0.01:  # Very low crowd density is a major indicator of high risk.
+        high_risk_conditions += 1
+    if row['SignalStrength (dBm)'] < -100:  # Poor signal strength indicating potential communication failure.
+        high_risk_conditions += 1
+    if row['GenderRatio'] < 0.2:  # Very low female-to-male ratio indicates higher safety risks for women.
+        high_risk_conditions += 1
+    if row['Isolation'] == 1:  # Isolation indicates an area with fewer people and no access to help.
+        high_risk_conditions += 1
+    if row['TotalPopulation'] < 10:  # A very low population count suggests the area may lack witnesses or support.
+        high_risk_conditions += 1
+    if row['SuddenDrop'] == 1:  # A sudden drop in population or activity suggests an emergency or anomaly.
+        high_risk_conditions += 1
+    if row['NoSignal'] == 1:  # Complete lack of signal means no way to call for help.
+        high_risk_conditions += 1
+    if row['LowCrowdDensity'] == 1:  # Very low crowd density can indicate isolation or dangerous situations.
+        high_risk_conditions += 1
+
+    # --- Median Risk Conditions ---
+    if 0.01 <= row['CrowdDensity (people/m²)'] < 0.05:  # Moderate crowd density is a sign of potential risks.
+        median_risk_conditions += 1
+    if -100 <= row['SignalStrength (dBm)'] < -90:  # Low signal strength can still result in communication issues.
+        median_risk_conditions += 1
+    if 0.2 <= row['GenderRatio'] < 0.5:  # Moderate gender ratio may indicate less risk, but not fully safe.
+        median_risk_conditions += 1
+    if 10 <= row['TotalPopulation'] < 50:  # A moderate population can provide some safety but is still vulnerable.
+        median_risk_conditions += 1
+    if row['NightTime'] == 1:  # Night time increases the potential risk due to reduced visibility and activity.
+        median_risk_conditions += 1
+
+    # --- Final Risk Level Decision ---
+    if high_risk_conditions >= 2:
+        return 2  # High Risk: At least 2 high-risk conditions were met.
+    elif median_risk_conditions >= 2 or high_risk_conditions == 1:
+        return 1  # Median Risk: Either 2 median-risk conditions met, or 1 high-risk condition.
+    else:
+        return 0  # Low Risk: No conditions met for high or medium risk.
+
 
 def inverse_time(sin_val, cos_val):
     """Convert encoded time back to HH:MM:SS"""
