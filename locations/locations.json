@@ -1,0 +1,222 @@
+[
+  {
+    "lat": 22.5091,
+    "lon": 75.9718,
+    "info": {
+      "full_name": "Ravi Sharma",
+      "aadhar_no": "3456 7890 1234",
+      "phone_no": "+91 9876543210",
+      "home_address": "12 Shivaji Nagar, Indore, MP 452001",
+      "work_info": "Sales Executive at Reliance Retail"
+    }
+  },
+  {
+    "lat": 22.7309,
+    "lon": 75.7454,
+    "info": {
+      "full_name": "Pooja Verma",
+      "aadhar_no": "4567 8901 2345",
+      "phone_no": "+91 8765432109",
+      "home_address": "221B MG Road, Indore, MP 452003",
+      "work_info": "Software Developer at Infosys"
+    }
+  },
+  {
+    "lat": 22.6750,
+    "lon": 75.8831,
+    "info": {
+      "full_name": "Amitabh Singh",
+      "aadhar_no": "5678 9012 3456",
+      "phone_no": "+91 7654321098",
+      "home_address": "7 Green Park, Dewas, MP 455001",
+      "work_info": "Mechanical Engineer at L&T"
+    }
+  },
+  {
+    "lat": 22.7540,
+    "lon": 75.8943,
+    "info": {
+      "full_name": "Sneha Mishra",
+      "aadhar_no": "6789 0123 4567",
+      "phone_no": "+91 6543210987",
+      "home_address": "4 Bhopal Road, Indore, MP 452002",
+      "work_info": "Teacher at Delhi Public School"
+    }
+  },
+  {
+    "lat": 22.6592,
+    "lon": 75.6442,
+    "info": {
+      "full_name": "Vikas Patel",
+      "aadhar_no": "7890 1234 5678",
+      "phone_no": "+91 9871234567",
+      "home_address": "Flat 301, Saket Nagar, Indore, MP 452007",
+      "work_info": "Bank Manager at HDFC Bank"
+    }
+  },
+  {
+    "lat": 22.7215,
+    "lon": 75.8806,
+    "info": {
+      "full_name": "Ruchi Jain",
+      "aadhar_no": "8901 2345 6789",
+      "phone_no": "+91 9123456789",
+      "home_address": "88 Ring Road, Rau, MP 453331",
+      "work_info": "Graphic Designer at Creative Minds"
+    }
+  },
+  {
+    "lat": 22.7777,
+    "lon": 75.8878,
+    "info": {
+      "full_name": "Ankit Yadav",
+      "aadhar_no": "9012 3456 7890",
+      "phone_no": "+91 9988776655",
+      "home_address": "221 Palm Residency, Ujjain Road, MP",
+      "work_info": "Operations Head at Flipkart Hub"
+    }
+  },
+  {
+    "lat": 22.5757,
+    "lon": 75.6164,
+    "info": {
+      "full_name": "Neha Saxena",
+      "aadhar_no": "1234 5678 9012",
+      "phone_no": "+91 8877665544",
+      "home_address": "5 Lotus Apartments, Dewas Naka, MP",
+      "work_info": "Business Analyst at Cognizant"
+    }
+  },
+  {
+    "lat": 22.7770,
+    "lon": 75.8865,
+    "info": {
+      "full_name": "Devansh Bhatnagar",
+      "aadhar_no": "2345 6789 0123",
+      "phone_no": "+91 9988001122",
+      "home_address": "9 Kalani Nagar, Indore, MP",
+      "work_info": "Chartered Accountant"
+    }
+  },
+  {
+    "lat": 22.6831,
+    "lon": 75.8576,
+    "info": {
+      "full_name": "Isha Mehta",
+      "aadhar_no": "3456 7890 1234",
+      "phone_no": "+91 8899001122",
+      "home_address": "A-12, Vijay Nagar, Indore, MP",
+      "work_info": "HR Executive at TCS"
+    }
+  },
+  {
+    "lat": 22.5549,
+    "lon": 75.8746,
+    "info": {
+      "full_name": "Nikhil Gupta",
+      "aadhar_no": "4567 8901 2345",
+      "phone_no": "+91 9001122334",
+      "home_address": "Sector 3, Rau, Indore, MP",
+      "work_info": "Civil Engineer at NCC Limited"
+    }
+  },
+  {
+    "lat": 22.7204,
+    "lon": 75.8305,
+    "info": {
+      "full_name": "Ritika Joshi",
+      "aadhar_no": "5678 9012 3456",
+      "phone_no": "+91 9112233445",
+      "home_address": "21 AB Road, Palasia, Indore",
+      "work_info": "Marketing Officer at Axis Bank"
+    }
+  },
+  {
+    "lat": 22.4869,
+    "lon": 75.7315,
+    "info": {
+      "full_name": "Saurabh Deshmukh",
+      "aadhar_no": "6789 0123 4567",
+      "phone_no": "+91 9223344556",
+      "home_address": "Plot 45, Indira Nagar, Dewas",
+      "work_info": "Lawyer at Dewas Court"
+    }
+  },
+  {
+    "lat": 22.4144,
+    "lon": 75.9812,
+    "info": {
+      "full_name": "Megha Kulkarni",
+      "aadhar_no": "7890 1234 5678",
+      "phone_no": "+91 9334455667",
+      "home_address": "Sunshine Residency, Ujjain",
+      "work_info": "Interior Designer"
+    }
+  },
+  {
+    "lat": 22.5555,
+    "lon": 75.8749,
+    "info": {
+      "full_name": "Vivek Bansal",
+      "aadhar_no": "8901 2345 6789",
+      "phone_no": "+91 9445566778",
+      "home_address": "123 MG Road, Indore",
+      "work_info": "IT Consultant at Tech Mahindra"
+    }
+  },
+  {
+    "lat": 22.5889,
+    "lon": 75.6541,
+    "info": {
+      "full_name": "Anjali Kapoor",
+      "aadhar_no": "9012 3456 7890",
+      "phone_no": "+91 9556677889",
+      "home_address": "Rainbow Apartments, Dewas",
+      "work_info": "Civil Service Aspirant"
+    }
+  },
+  {
+    "lat": 22.7037,
+    "lon": 75.9053,
+    "info": {
+      "full_name": "Karan Malhotra",
+      "aadhar_no": "1122 3344 5566",
+      "phone_no": "+91 9667788990",
+      "home_address": "Plot 202, Silicon City, Indore",
+      "work_info": "Architect at Larsen & Toubro"
+    }
+  },
+  {
+    "lat": 22.3689,
+    "lon": 75.8485,
+    "info": {
+      "full_name": "Sanya Arora",
+      "aadhar_no": "2233 4455 6677",
+      "phone_no": "+91 9778899001",
+      "home_address": "Lakeview Apartments, Ujjain",
+      "work_info": "Doctor at Apollo Hospital"
+    }
+  },
+  {
+    "lat": 22.6835,
+    "lon": 75.8574,
+    "info": {
+      "full_name": "Rahul Choudhary",
+      "aadhar_no": "3344 5566 7788",
+      "phone_no": "+91 9889900112",
+      "home_address": "Park Avenue, Palasia, Indore",
+      "work_info": "Startup Founder"
+    }
+  },
+  {
+    "lat": 22.7630,
+    "lon": 75.9846,
+    "info": {
+      "full_name": "Bhavya Soni",
+      "aadhar_no": "4455 6677 8899",
+      "phone_no": "+91 9990011223",
+      "home_address": "Infinity Tower, Ujjain",
+      "work_info": "Fashion Designer"
+    }
+  }
+]

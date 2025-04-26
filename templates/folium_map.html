@@ -1,22 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Location Map</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body, html {
-      margin: 0;
-      height: 100%;
-    }
-    #map-container {
-      height: 100%;
-      width: 100%;
-    }
-  </style>
+    <title>Interactive Map</title>
+    <style>
+        body { margin:0; padding:0; }
+        #map { height: 100vh; }
+        .redirect-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-family: Arial;
+            font-size: 14px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+        }
+        .redirect-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-  <div id="map-container">
+
+<div id="map">
     {{ map_html|safe }}
-  </div>
+</div>
+
+<!-- ✅ Easy link based redirect -->
+<a class="redirect-btn" href="/map/{{ lat }}/{{ lon }}">🔴 Go to Red Pin</a>
+
 </body>
 </html>

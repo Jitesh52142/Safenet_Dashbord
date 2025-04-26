@@ -5,6 +5,10 @@ from sklearn.preprocessing import StandardScaler
 import pickle
 import os
 import folium
+import json
+import requests
+
+
 
 app = Flask(__name__)
 
@@ -114,16 +118,81 @@ def map():
     return render_template("map.html")
 
 
+# OpenCage API key (replace with your actual API key)
+API_KEY = '7a5c6dd793864d70a1acd2055dfbb13d'
 
+BASE_URL = 'https://api.opencagedata.com/geocode/v1/json'
+
+# Function to get place name from coordinates using OpenCage API
+def get_place_name(lat, lon):
+    params = {
+        'q': f'{lat},{lon}',
+        'key': API_KEY,
+        'language': 'en'
+    }
+    response = requests.get(BASE_URL, params=params)
+    data = response.json()
+    
+    if data['results']:
+        return data['results'][0]['formatted']  # Return the first result's formatted address
+    else:
+        return "Unknown Location"  # Fallback if no result found
 
 @app.route('/map/<float:lat>/<float:lon>')
 def show_map(lat, lon):
-    map_obj = folium.Map(location=[lat, lon], zoom_start=16)
-    folium.Marker([lat, lon], popup='Tower Location').add_to(map_obj)
+    # Get the place name from OpenCage API
+    place_name = get_place_name(lat, lon)
 
+    # Create map centered at given location
+    map_obj = folium.Map(location=[lat, lon], zoom_start=75, control_scale=True)
+
+    # Add main tower marker (Red Pin) with the place name in the popup
+    folium.Marker(
+        [lat, lon],
+        popup=folium.Popup(f"<b>Location:</b> {place_name}<br><b>Coordinates:</b> ({lat}, {lon})", max_width=300, min_width=200),
+        tooltip="Main Tower",
+        icon=folium.Icon(color='red', icon='cloud')
+    ).add_to(map_obj)
+
+    # Load nearby user pins
+    json_path = os.path.join('locations', 'locations.json')
+    with open(json_path, 'r') as f:
+        nearby_locations = json.load(f)
+
+    # Add nearby user markers (Blue Pins)
+    for loc in nearby_locations:
+        # Skip adding again if it is same as main tower
+        if abs(loc['lat'] - lat) < 0.0001 and abs(loc['lon'] - lon) < 0.0001:
+            continue
+
+        popup_html = f"""
+        <div style="font-family: Arial; font-size: 14px;">
+            <b>Name:</b> {loc['info']['full_name']}<br>
+            <b>Aadhar No:</b> {loc['info']['aadhar_no']}<br>
+            <b>Phone:</b> {loc['info']['phone_no']}<br>
+            <b>Home Address:</b> {loc['info']['home_address']}<br>
+            <b>Work Info:</b> {loc['info']['work_info']}<br>
+            <a href="/info/{loc['lat']}/{loc['lon']}"</a>
+        </div>
+        """
+
+        folium.Marker(
+            [loc['lat'], loc['lon']],
+            popup=folium.Popup(popup_html, max_width=300, min_width=200),
+            tooltip=loc['info']['full_name'],
+            icon=folium.Icon(color='blue', icon='user')
+        ).add_to(map_obj)
+
+    # Convert map to HTML
     map_html = map_obj._repr_html_()
-    return render_template('folium_map.html', map_html=map_html)
 
+    # Now pass lat, lon separately to template for redirect button
+    return render_template('folium_map.html', map_html=map_html, lat=lat, lon=lon)
+
+# Info Page Route
+@app.route('/info/<float:lat>/<float:lon>')
+def show_info(lat, lon):
+    return f"<h1>Information Page</h1><p>Location: {lat}, {lon}</p>"
 
 @app.route('/predict', methods=['POST'])
 def predict():
